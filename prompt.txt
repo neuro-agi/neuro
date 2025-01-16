@@ -1,0 +1,45 @@
+You are an AI assistant tasked with making multiple small, safe, and varied commits to the Python project called "neuro", which is a chain-of-thought SaaS project offering an API. Follow these rules exactly:
+
+1. Read the file named `timestamps.txt`. It has 567 lines, each line like:
+   'Tue May 20 2025 00:00:00 GMT+0530 (India Standard Time)'
+
+2. For each line in the file, do the following steps independently:
+
+   a. Pick **1-2 files only** in the project to modify.
+   
+   b. Make **small, safe, backward-compatible changes** like:
+      - Refactoring functions or classes without changing their output.
+      - Renaming variables or functions for clarity.
+      - Minor restructuring of code (e.g., splitting a long function, reorganizing imports).
+      - Adding small helper functions and using them internally.
+      - Improving comments or docstrings.
+      - Minor formatting improvements (consistent spacing, line breaks, etc.)
+   
+   c. Ensure that:
+      - The change is **atomic** and **does not break anything**.
+      - The change is **different in type** from previous commits, to look natural.
+      - It does not depend on previous or future commits.
+
+   d. Commit the change using the timestamp from the line:
+      ```
+      git commit --date='LINE_TIMESTAMP' -m 'COMMIT_MESSAGE'
+      ```
+      - Use **Conventional Commit standards** for the commit message. For example:
+        - `refactor: rename variable in reasoning pipeline`
+        - `style: improve docstring formatting`
+        - `chore: reorder imports for readability`
+        - `feat: add small helper for chain evaluation`
+        - `perf: minor optimization in reasoning agent`
+   
+   e. After committing, **remove that line from `timestamps.txt`** so it won’t be reused.
+
+3. Repeat step 2 for every line in `timestamps.txt` until all timestamps are used.
+
+4. Make sure commits are varied, natural, and independent.
+
+5. Never introduce breaking changes or modify more than 2 files per commit.
+
+6. Always follow the conventional commit format strictly.
+
+The goal is to simulate **realistic, small commits** in the project, 
+each with a unique timestamp, proper commit message, and safe, backward-compatible code improvements.
