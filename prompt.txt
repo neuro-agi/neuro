@@ -31,7 +31,7 @@ You are an AI assistant tasked with making multiple small, safe, and varied comm
         - `feat: add small helper for chain evaluation`
         - `perf: minor optimization in reasoning agent`
    
-   e. After committing, **remove that line from `timestamps.txt`** so it won’t be reused.
+   e. After committing, **remove that line from `timestamps.txt`** so it won’t be reused. And inorder to remove first line from timestamps.txt you must run delete_line.sh file only, like *sh delete_line.sh*
 
 3. Repeat step 2 for every line in `timestamps.txt` until all timestamps are used.
 
