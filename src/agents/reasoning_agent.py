@@ -131,6 +131,10 @@ class ReasoningAgent:
         coherence = assessment['coherence_score']
         risk_penalty = 0.3 if assessment['risk_flag'] else 0.0
         
+        # Define weights for the score components
+        faithfulness_weight = 0.6
+        coherence_weight = 0.4
+        
         # Weighted combination with risk penalty
-        score = (faithfulness * 0.6 + coherence * 0.4) - risk_penalty
+        score = (faithfulness * faithfulness_weight + coherence * coherence_weight) - risk_penalty
         return max(0.0, min(1.0, score))
