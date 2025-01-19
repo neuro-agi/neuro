@@ -13,19 +13,19 @@ class Config(BaseModel):
     """Configuration settings loaded from environment variables."""
     
     # Model backend configuration
-    model_backend: str = "mock"
-    openai_api_key: str = ""
+    model_backend: str = "mock"  # "mock" or "openai"
+    openai_api_key: str = ""  # Required if model_backend is "openai"
     
-    # Monitoring thresholds
-    faithfulness_threshold: float = 0.6
-    coherence_threshold: float = 0.5
+    # Monitoring thresholds for evaluating reasoning chains
+    faithfulness_threshold: float = 0.6  # For checking if the model's reasoning aligns with the source
+    coherence_threshold: float = 0.5  # For checking if the model's reasoning is logical
     
-    # Perturbation settings
-    perturb_steps_max: int = 2
-    n_candidates: int = 3
+    # Perturbation settings for testing robustness
+    perturb_steps_max: int = 2  # Maximum number of steps for perturbation
+    n_candidates: int = 3  # Number of candidates to generate for perturbation
     
-    # Logging
-    log_level: str = "INFO"
+    # Logging configuration
+    log_level: str = "INFO"  # Logging level (e.g., "DEBUG", "INFO", "WARNING")
     
     model_config = {
         "env_file": ".env",
