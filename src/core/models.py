@@ -76,14 +76,6 @@ class ReasoningResponse(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     perturbation: Optional[PerturbationResult] = Field(None, description="Perturbation results (only in perturb mode)")
     
-    @field_validator('faithfulness_score', 'coherence_score')
-    @classmethod
-    def validate_scores(cls, v):
-        """Validate scores are between 0 and 1."""
-        if not 0.0 <= v <= 1.0:
-            raise ValueError("Scores must be between 0.0 and 1.0")
-        return v
-    
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -101,6 +93,14 @@ class ReasoningResponse(BaseModel):
             }
         }
     }
+
+    @field_validator('faithfulness_score', 'coherence_score')
+    @classmethod
+    def validate_scores(cls, v):
+        """Validate scores are between 0 and 1."""
+        if not 0.0 <= v <= 1.0:
+            raise ValueError("Scores must be between 0.0 and 1.0")
+        return v
 
 
 class HealthResponse(BaseModel):
