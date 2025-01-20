@@ -5,17 +5,19 @@ Handles reasoning requests with different modes and error handling.
 
 from fastapi import APIRouter, HTTPException, Query
 from typing import Literal
-from src.core.models import ReasoningRequest, ReasoningResponse, ErrorResponse
+from src.core.models import ReasoningRequest, ReasoningResponse, ErrorResponse, HealthResponse
 from src.agents.reasoning_agent import ReasoningAgent, MonitoringError
 from src.utils.logger import get_logger
+import time
 
 logger = get_logger(__name__)
 
 # Create router
-router = APIRouter(prefix="/api/v1/reason")
+router = APIRouter(prefix="/api/v1")
 
 # Global agent instance (will be initialized in main.py)
 agent: ReasoningAgent = None
+start_time = time.time()
 
 
 def set_agent(reasoning_agent: ReasoningAgent):
@@ -24,7 +26,7 @@ def set_agent(reasoning_agent: ReasoningAgent):
     agent = reasoning_agent
 
 
-@router.post("/", response_model=ReasoningResponse)
+@router.post("/reason", response_model=ReasoningResponse)
 async def reason(
     request: ReasoningRequest,
     mode: Literal["live", "dryrun", "perturb"] = Query(default="live", description="Processing mode")
@@ -73,3 +75,27 @@ async def reason(
     except Exception as e:
         logger.error(f"Unexpected error processing request: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/health", response_model=HealthResponse)
+async def health_check():
+    """Return service health status."""
+    uptime = time.time() - start_time
+    
+    # Basic checks
+    service_status = "ok"
+    monitor_status = "ok"
+    
+    if agent is None:
+        service_status = "degraded"
+        monitor_status = "unavailable"
+    
+    # In a real system, you might add more checks here, e.g.,
+    # - Check database connectivity
+    # - Check model backend availability
+    
+    return HealthResponse(
+        service=service_status,
+        monitor=monitor_status,
+        uptime_seconds=uptime
+    )
