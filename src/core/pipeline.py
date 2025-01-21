@@ -29,15 +29,20 @@ Question: {input}
     
     async def generate_cot(self, prompt: str, context: Optional[Dict[str, Any]] = None, n_candidates: int = 3) -> List[List[str]]:
         """
-        Generate Chain of Thought reasoning traces.
-        
+        Generate multiple Chain of Thought (CoT) reasoning traces for a given prompt.
+
+        This method takes a prompt and context, then uses the configured model adapter
+        to generate multiple candidate reasoning traces. Each trace is a sequence of
+        explicit reasoning steps.
+
         Args:
-            prompt: The input question or problem
-            context: Additional context for reasoning
-            n_candidates: Number of candidate traces to generate
-            
+            prompt: The input question or problem to reason about.
+            context: Optional dictionary of key-value pairs providing additional context.
+            n_candidates: The number of candidate traces to generate.
+
         Returns:
-            List of reasoning traces, each as a list of steps
+            A list of reasoning traces. Each trace is a list of strings, where each
+            string is a single step in the reasoning process.
         """
         self.logger.debug(f"Generating {n_candidates} CoT candidates for prompt: {prompt[:100]}...")
         
