@@ -243,36 +243,40 @@ class CoTMonitor:
     def _generate_explanation(self, faithfulness_score: float, coherence_score: float, 
                             risk_flag: bool, components: Dict[str, float]) -> str:
         """Generate human-readable explanation of monitoring results."""
-        explanations = []
-        
-        # Faithfulness explanation
-        if faithfulness_score >= 0.8:
-            explanations.append("High faithfulness: reasoning steps strongly support the final answer")
-        elif faithfulness_score >= 0.6:
-            explanations.append("Moderate faithfulness: reasoning steps provide reasonable support")
-        else:
-            explanations.append("Low faithfulness: reasoning steps may not adequately support the final answer")
-        
-        # Coherence explanation
-        if coherence_score >= 0.8:
-            explanations.append("High coherence: reasoning steps are logically consistent")
-        elif coherence_score >= 0.6:
-            explanations.append("Moderate coherence: reasoning steps are mostly consistent")
-        else:
-            explanations.append("Low coherence: reasoning steps contain contradictions or inconsistencies")
-        
-        # Risk explanation
-        if risk_flag:
-            risk_factors = []
-            if faithfulness_score < self.thresholds['faithfulness']:
-                risk_factors.append("faithfulness below threshold")
-            if coherence_score < self.thresholds['coherence']:
-                risk_factors.append("coherence below threshold")
-            if components["obfuscation"] > self.thresholds['obfuscation']:
-                risk_factors.append("high obfuscation detected")
-            
-            explanations.append(f"Risk detected: {', '.join(risk_factors)}")
-        else:
-            explanations.append("No significant risks detected")
-        
+        explanations = [
+            self._get_faithfulness_explanation(faithfulness_score),
+            self._get_coherence_explanation(coherence_score),
+            self._get_risk_explanation(faithfulness_score, coherence_score, risk_flag, components)
+        ]
         return ". ".join(explanations) + "."
+
+    def _get_faithfulness_explanation(self, score: float) -> str:
+        if score >= 0.8:
+            return "High faithfulness: reasoning steps strongly support the final answer"
+        elif score >= 0.6:
+            return "Moderate faithfulness: reasoning steps provide reasonable support"
+        else:
+            return "Low faithfulness: reasoning steps may not adequately support the final answer"
+
+    def _get_coherence_explanation(self, score: float) -> str:
+        if score >= 0.8:
+            return "High coherence: reasoning steps are logically consistent"
+        elif score >= 0.6:
+            return "Moderate coherence: reasoning steps are mostly consistent"
+        else:
+            return "Low coherence: reasoning steps contain contradictions or inconsistencies"
+
+    def _get_risk_explanation(self, faithfulness_score: float, coherence_score: float, 
+                            risk_flag: bool, components: Dict[str, float]) -> str:
+        if not risk_flag:
+            return "No significant risks detected"
+
+        risk_factors = []
+        if faithfulness_score < self.thresholds['faithfulness']:
+            risk_factors.append("faithfulness below threshold")
+        if coherence_score < self.thresholds['coherence']:
+            risk_factors.append("coherence below threshold")
+        if components["obfuscation"] > self.thresholds['obfuscation']:
+            risk_factors.append("high obfuscation detected")
+        
+        return f"Risk detected: {', '.join(risk_factors)}" if risk_factors else "Risk detected"
