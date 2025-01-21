@@ -18,6 +18,11 @@ class ModelAdapter(ABC):
     """Abstract base class for model adapters."""
     
     @abstractmethod
+    def get_model_name(self) -> str:
+        """Return the name of the model."""
+        pass
+
+    @abstractmethod
     async def generate(self, prompt: str, n: int = 1) -> List[str]:
         """Generate responses for a given prompt."""
         pass
@@ -39,6 +44,9 @@ class MockModelAdapter(ModelAdapter):
     def __init__(self):
         self.logger = get_logger(f"{__name__}.MockModelAdapter")
     
+    def get_model_name(self) -> str:
+        return "mock"
+
     async def generate(self, prompt: str, n: int = 1) -> List[str]:
         """Generate deterministic mock responses."""
         self.logger.debug(f"Generating {n} responses for prompt: {prompt[:100]}...")
@@ -169,6 +177,9 @@ class OpenAIModelAdapter(ModelAdapter):
         self.logger = get_logger(f"{__name__}.OpenAIModelAdapter")
         self.client = httpx.AsyncClient(timeout=30.0)
     
+    def get_model_name(self) -> str:
+        return self.model
+
     async def generate(self, prompt: str, n: int = 1) -> List[str]:
         """Generate responses using OpenAI API."""
         self.logger.debug(f"Generating {n} responses using OpenAI")
