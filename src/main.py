@@ -67,12 +67,18 @@ async def lifespan(app: FastAPI):
     # Shutdown
     logger.info("Shutting down application")
     
+    shutdown_tasks = []
     if model_adapter and hasattr(model_adapter, 'close'):
+        shutdown_tasks.append(model_adapter.close())
+    
+    if shutdown_tasks:
         try:
-            await model_adapter.close()
-            logger.info("Model adapter closed")
+            await asyncio.wait_for(asyncio.gather(*shutdown_tasks), timeout=10.0)
+            logger.info("Graceful shutdown of components completed")
+        except asyncio.TimeoutError:
+            logger.warning("Shutdown timed out. Forcing exit.")
         except Exception as e:
-            logger.warning(f"Error closing model adapter: {e}")
+            logger.error(f"Error during shutdown: {e}")
     
     logger.info("Application shutdown completed")
 
