@@ -164,3 +164,17 @@ async def test_reason_multiple_candidates(agent):
     # Should have evaluated multiple candidates
     assert response.metadata["n_candidates"] >= 1
     assert response.metadata["best_score"] is not None
+
+
+@pytest.mark.asyncio
+async def test_reason_empty_trace(agent, monkeypatch):
+    """Test reasoning with empty trace from model adapter."""
+    async def mock_generate_cot(*args, **kwargs):
+        return []
+
+    monkeypatch.setattr(agent.pipeline, "generate_cot", mock_generate_cot)
+
+    request = ReasoningRequest(input="A question that returns empty trace")
+
+    with pytest.raises(ValueError, match="No reasoning traces generated"):
+        await agent.reason(request, mode="dryrun")
