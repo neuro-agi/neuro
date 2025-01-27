@@ -144,3 +144,19 @@ async def test_run_perturbation_experiments_empty_trace(pipeline):
     assert result.original_answer == ""
     assert result.perturbed_answers == []
     assert result.causal_influence_score == 0.0
+
+
+@pytest.mark.asyncio
+async def test_generate_cot_single_step_trace(pipeline, monkeypatch):
+    """Test CoT generation with a single-step trace."""
+    async def mock_generate(*args, **kwargs):
+        return ["This is a single step trace."]
+
+    monkeypatch.setattr(pipeline.model_adapter, "generate", mock_generate)
+
+    prompt = "A question that returns a single step trace"
+    traces = await pipeline.generate_cot(prompt, n_candidates=1)
+
+    assert len(traces) == 1
+    assert len(traces[0]) == 1
+    assert traces[0][0] == "This is a single step trace."
