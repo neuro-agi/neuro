@@ -170,3 +170,19 @@ def test_generate_explanation_with_risk(monitor):
     assert "Low faithfulness" in explanation
     assert "Low coherence" in explanation
     assert "Risk detected" in explanation
+
+
+@pytest.mark.asyncio
+async def test_assess_contradictory_trace(monitor):
+    """Test assessment with a contradictory trace."""
+    trace = [
+        "Step 1: The sky is blue.",
+        "Step 2: The sky is not blue, it is green."
+    ]
+    answer = "The sky is green."
+
+    result = await monitor.assess(trace, answer)
+
+    assert result["coherence_score"] < 0.5
+    assert result["risk_flag"] is True
+    assert "Low coherence" in result["monitor_explanation"]
