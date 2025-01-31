@@ -1,45 +1,54 @@
-You are an AI assistant tasked with making multiple small, safe, and varied commits to the Python project called "neuro", which is a chain-of-thought SaaS project offering an API. Follow these rules exactly:
+You are an AI assistant tasked with making multiple small, safe, and varied commits to the Python project called "neuro", which is a chain-of-thought SaaS project offering an API. You must handle multiple tool calls in a single batch efficiently. Follow these rules exactly:
 
-1. Read the file named `timestamps.txt`. It has 567 lines, each line like:
+1. Read the file `timestamps.txt` which has 567 lines, each line like:
    'Tue May 20 2025 00:00:00 GMT+0530 (India Standard Time)'
 
-2. For each line in the file, do the following steps independently:
+2. Generate a **batch plan** for all timestamps at once. For each line, plan the following:
 
-   a. Pick **1-2 files only** in the project to modify.
-   
-   b. Make **small, safe, backward-compatible changes** like:
-      - Refactoring functions or classes without changing their output.
+   a. Pick 1-2 files to modify.  
+
+   b. Decide the type of safe, backward-compatible change, such as:
+      - Refactoring functions or classes without changing outputs.
       - Renaming variables or functions for clarity.
-      - Minor restructuring of code (e.g., splitting a long function, reorganizing imports).
-      - Adding small helper functions and using them internally.
+      - Minor restructuring (splitting long functions, reorganizing imports).
+      - Adding small helper functions used internally.
       - Improving comments or docstrings.
-      - Minor formatting improvements (consistent spacing, line breaks, etc.)
-   
-   c. Ensure that:
-      - The change is **atomic** and **does not break anything**.
-      - The change is **different in type** from previous commits, to look natural.
-      - It does not depend on previous or future commits.
+      - Minor formatting improvements (consistent spacing, line breaks).
 
-   d. Commit the change using the timestamp from the line:
+   c. Ensure that each planned change is:
+      - Atomic, independent, and does not break anything.
+      - Varied in type compared to previous planned commits.
+      - Self-contained, not dependent on previous or future commits.
+
+   d. Prepare the **git commit command** with the timestamp:
       ```
       git commit --date='LINE_TIMESTAMP' -m 'COMMIT_MESSAGE'
       ```
-      - Use **Conventional Commit standards** for the commit message. For example:
+      - Use **Conventional Commit standards** strictly, for example:
         - `refactor: rename variable in reasoning pipeline`
         - `style: improve docstring formatting`
         - `chore: reorder imports for readability`
         - `feat: add small helper for chain evaluation`
         - `perf: minor optimization in reasoning agent`
-   
-   e. After committing, **remove that line from `timestamps.txt`** so it won’t be reused. And inorder to remove first line from timestamps.txt you must run delete_line.sh file only, like *sh delete_line.sh*
 
-3. Repeat step 2 for every line in `timestamps.txt` until all timestamps are used.
+   e. Include the **post-commit cleanup command** for removing the used timestamp line:
+      ```
+      sh delete_line.sh
+      ```
 
-4. Make sure commits are varied, natural, and independent.
+3. Output the **entire batch plan in one structured format**, e.g., JSON or a list, containing:
+   - Target files
+   - Type of change
+   - Commit message
+   - Timestamp
+   - Cleanup command
 
-5. Never introduce breaking changes or modify more than 2 files per commit.
+4. Once the plan is ready, execute all steps in a **single batch tool call**, ensuring:
+   - Commits remain realistic, safe, and atomic.
+   - No more than 2 files are modified per commit.
+   - Commit types are varied and natural.
+   - Conventional commit format is strictly followed.
 
-6. Always follow the conventional commit format strictly.
+5. Repeat this process until all timestamps are consumed.  
 
-The goal is to simulate **realistic, small commits** in the project, 
-each with a unique timestamp, proper commit message, and safe, backward-compatible code improvements.
+The goal is to simulate realistic, small commits efficiently in batch, with unique timestamps, proper commit messages, and safe backward-compatible improvements, minimizing sequential tool calls.
