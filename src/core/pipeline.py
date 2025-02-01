@@ -10,7 +10,7 @@ from src.adapters.model_adapter import ModelAdapter
 from src.core.models import PerturbationResult
 from src.utils.logger import get_logger
 
-logger = get_logger(__name__)
+logger = get_logger(logger_name=__name__)
 
 
 class ReasoningPipeline:
@@ -25,7 +25,7 @@ Question: {input}
     def __init__(self, model_adapter: ModelAdapter, logger=None):
         """Initialize the reasoning pipeline."""
         self.model_adapter = model_adapter
-        self.logger = logger or get_logger(__name__)
+        self.logger = logger or get_logger(logger_name=__name__)
     
     async def generate_cot(self, prompt: str, context: Optional[Dict[str, Any]] = None, n_candidates: int = 3) -> List[List[str]]:
         """

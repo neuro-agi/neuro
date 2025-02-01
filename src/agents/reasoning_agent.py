@@ -11,7 +11,7 @@ from src.core.pipeline import ReasoningPipeline
 from src.core.monitor import CoTMonitor
 from src.utils.logger import get_logger
 
-logger = get_logger(__name__)
+logger = get_logger(logger_name=__name__)
 
 
 class MonitoringError(Exception):
@@ -28,7 +28,7 @@ class ReasoningAgent:
         self.monitor = monitor
         self.pipeline = ReasoningPipeline(model_adapter)
         self.n_candidates = n_candidates or 3
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(logger_name=__name__)
     
     async def reason(self, request: ReasoningRequest, mode: str = "live") -> ReasoningResponse:
         """

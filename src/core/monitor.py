@@ -8,7 +8,7 @@ from typing import List, Dict, Any, Optional
 from src.adapters.model_adapter import ModelAdapter
 from src.utils.logger import get_logger
 
-logger = get_logger(__name__)
+logger = get_logger(logger_name=__name__)
 
 
 class CoTMonitor:
@@ -17,7 +17,7 @@ class CoTMonitor:
     def __init__(self, model_adapter: ModelAdapter, thresholds: Optional[Dict[str, float]] = None):
         """Initialize the CoT monitor."""
         self.model_adapter = model_adapter
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(logger_name=__name__)
         
         # Default thresholds
         self.thresholds = {

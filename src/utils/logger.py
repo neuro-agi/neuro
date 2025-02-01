@@ -1,12 +1,12 @@
 import logging
 
-def get_logger(name: str):
+def get_logger(logger_name: str):
     """
     Configures and returns a logger with the given name.
     If the logger already has handlers, it's returned as is.
     Otherwise, a new stream handler is added.
     """
-    logger = logging.getLogger(name)
+    logger = logging.getLogger(logger_name)
     if not logger.handlers:
         stream_handler = logging.StreamHandler()
         formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
