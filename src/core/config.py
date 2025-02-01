@@ -66,7 +66,12 @@ class Config(BaseModel):
         return v.upper()
     
     def get_model_adapter_config(self) -> Dict[str, Any]:
-        """Get configuration for model adapter initialization."""
+        """
+        Get configuration for model adapter initialization.
+        
+        Returns:
+            A dictionary with the model adapter configuration.
+        """
         if self.model_backend == "openai":
             if not self.openai_api_key:
                 raise ValueError("OPENAI_API_KEY is required when MODEL_BACKEND=openai")
