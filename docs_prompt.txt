@@ -1,0 +1,88 @@
+You are an expert technical writer and senior backend engineer. Your task is to generate complete, production-ready documentation for a Python project named **Neuro** — a "Chain-of-Thought as a Service" SaaS platform that provides APIs for reasoning, reflection, and explanation generation. The documentation will be built using **Mintlify** (https://mintlify.com/), so ensure the structure, formatting, and syntax are fully compatible with Mintlify’s framework and folder conventions.
+
+Follow these exact instructions:
+
+1. **Goal of the project:**
+   Neuro is an API-first reasoning infrastructure that enables developers to perform multi-step reasoning (chain-of-thought) through a clean, scalable backend. It provides endpoints for reasoning pipelines, monitoring, evaluation, and introspection. The goal is to make chain-of-thought available as a service — usable by other applications, research tools, or AI orchestration layers.
+
+2. **High-level structure of the project:**
+   ```
+   /src
+     ├── reasoning/
+     │    ├── pipeline.py          # Core reasoning orchestration (ReasoningPipeline class)
+     │    ├── agent.py             # Defines ReasoningAgent that generates, refines, and validates reasoning
+     │    ├── utils.py             # Helper functions for text parsing, token counting, formatting
+     │
+     ├── api/
+     │    ├── main.py              # FastAPI entrypoint exposing reasoning endpoints
+     │    ├── routes/
+     │    │     ├── reasoning.py   # /reason endpoint for invoking chain of thought
+     │    │     ├── monitor.py     # /monitor endpoints for tracking and scoring reasoning results
+     │    │     ├── eval.py        # /eval endpoints for faithfulness and safety evaluation
+     │
+     ├── monitor/
+     │    ├── score.py             # Evaluation logic for reasoning quality
+     │    ├── metrics.py           # Quantitative tracking of reasoning accuracy and safety
+     │
+     ├── config/
+     │    ├── settings.py          # Configuration loader (API keys, model configs, etc.)
+     │
+     ├── tests/
+     │    ├── test_reasoning.py
+     │    ├── test_monitor.py
+     │    ├── test_api.py
+     │
+     ├── __init__.py
+   timestamps.txt
+   README.md
+   requirements.txt
+   ```
+
+3. **Features to document in depth:**
+   - ReasoningPipeline: execution flow, state tracking, model interaction
+   - ReasoningAgent: core chain-of-thought generator and refinement logic
+   - Faithfulness and Safety Evaluation: scoring algorithms, metrics definitions
+   - REST API: detailed endpoint documentation (`/reason`, `/eval`, `/monitor`)
+   - Config system: environment variables, model provider integrations
+   - Extensibility: how to plug in new reasoning models or evaluation modules
+   - Usage examples: full examples of using the API with cURL and Python SDK
+   - Deployment: how to run Neuro in production or locally
+   - Internal architecture: how modules interact, data flow, and reasoning lifecycle
+
+4. **Mintlify Documentation Requirements:**
+   - Generate documentation in **Mintlify’s file structure**, including:
+     ```
+     /docs
+       ├── introduction.md
+       ├── getting-started.md
+       ├── api/
+       │     ├── reasoning.md
+       │     ├── monitor.md
+       │     ├── eval.md
+       ├── internals/
+       │     ├── pipeline.md
+       │     ├── agent.md
+       │     ├── metrics.md
+       ├── config.md
+       ├── contributing.md
+     ```
+   - Each markdown file must include:
+     - A frontmatter title and description block (Mintlify style)
+     - Well-structured headers (`##`, `###`)
+     - Inline code examples in Python
+     - Explanations for all parameters, responses, and return types
+     - API examples formatted for Mintlify’s code block syntax
+     - Links between related sections (`[See Reasoning Agent →](../internals/agent.md)`)
+
+5. **Style Guide:**
+   - Use a formal, instructive tone suitable for developers.
+   - Keep sentences concise and technical.
+   - Each page must be standalone and complete.
+   - Include short example blocks for clarity.
+   - Focus on both **conceptual** and **practical** understanding.
+
+6. **Output:**
+   - Generate the **entire Mintlify docs directory** as text, with file structure and contents for each `.md` file.
+   - Do not include comments or explanations about your process — just produce the docs in final form.
+
+Your output should therefore contain the full Mintlify documentation tree in markdown format for every module and functionality of the Neuro project, ready to copy into the `/docs` folder.
