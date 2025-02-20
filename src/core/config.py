@@ -70,7 +70,7 @@ class Config(BaseModel):
                 raise ValueError("GEMINI_API_KEY is required when MODEL_BACKEND=gemini")
             return {
                 "api_key": self.gemini_api_key,
-                "model": "gemini-pro"
+                "model": "gemini-2.5-flash-lite"
             }
         return {}
     

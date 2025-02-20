@@ -12,7 +12,7 @@ from src.utils.logger import get_logger
 class GeminiModelAdapter(ModelAdapter):
     """Gemini API adapter."""
 
-    def __init__(self, api_key: str, model: str = "gemini-pro"):
+    def __init__(self, api_key: str, model: str = "gemini-2.5-flash-lite"):
         self.api_key = api_key
         self.model = model
         self.logger = get_logger(f"{__name__}.GeminiModelAdapter")
