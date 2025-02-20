@@ -4,9 +4,17 @@ Handles reasoning requests with different modes and error handling.
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from typing import Literal
-from src.core.models import ReasoningRequest, ReasoningResponse, ErrorResponse, HealthResponse
+from typing import Literal, Optional
+from src.core.models import (
+    ReasoningRequest, 
+    ReasoningResponse, 
+    ErrorResponse, 
+    HealthResponse,
+    ReasoningEventList,
+    ReasoningDetails
+)
 from src.agents.reasoning_agent import ReasoningAgent, MonitoringError
+from src.core import events
 from src.utils.logger import get_logger
 import time
 
@@ -102,3 +110,28 @@ async def health_check():
         monitor=monitor_status,
         uptime_seconds=uptime
     )
+
+@router.get("/monitor/events", response_model=ReasoningEventList)
+async def list_reasoning_events(
+    limit: int = Query(default=20, le=100),
+    offset: int = Query(default=0),
+    user_id: Optional[str] = Query(None, description="Filter events by user ID"),
+    model: Optional[str] = Query(None, description="Filter events by model used")
+):
+    """
+    Retrieve a paginated list of all reasoning events.
+    """
+    event_list = events.list_events(limit=limit, offset=offset, user_id=user_id, model=model)
+    has_more = len(event_list) == limit
+    return ReasoningEventList(events=event_list, has_more=has_more)
+
+
+@router.get("/monitor/reasoning/{reasoningId}", response_model=ReasoningDetails)
+async def get_reasoning_details(reasoningId: str):
+    """
+    Retrieve the detailed record for a single reasoning task.
+    """
+    response = events.get_reasoning_response(reasoningId)
+    if response is None:
+        raise HTTPException(status_code=404, detail="Reasoning ID not found")
+    return response

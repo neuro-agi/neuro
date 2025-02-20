@@ -4,11 +4,13 @@ Handles request processing, candidate generation, monitoring, and response forma
 """
 
 import uuid
+import time
 from typing import Optional, Dict, Any
 from src.adapters.model_adapter import ModelAdapter
-from src.core.models import ReasoningRequest, ReasoningResponse, PerturbationResult
+from src.core.models import ReasoningRequest, ReasoningResponse, PerturbationResult, ReasoningEvent
 from src.core.pipeline import ReasoningPipeline
 from src.core.monitor import CoTMonitor
+from src.core import events
 from src.utils.logger import get_logger
 
 logger = get_logger(logger_name=__name__)
@@ -46,6 +48,8 @@ class ReasoningAgent:
         """
         # Generate or use request ID
         request_id = request.request_id or str(uuid.uuid4())
+        reasoning_id = str(uuid.uuid4())
+        start_time = time.time()
         self.logger.info(f"Processing reasoning request {request_id} in {mode} mode")
 
         if not request.input:
@@ -113,6 +117,7 @@ class ReasoningAgent:
                 monitor_explanation=best_candidate['assessment']['monitor_explanation'],
                 metadata={
                     'request_id': request_id,
+                    'reasoning_id': reasoning_id,
                     'n_candidates': len(candidates),
                     'best_score': best_candidate['score'],
                     'mode': mode,
@@ -121,6 +126,20 @@ class ReasoningAgent:
                 perturbation=perturbation_result
             )
             
+            # 7. Record event
+            latency_ms = (time.time() - start_time) * 1000
+            event = ReasoningEvent(
+                event_id=str(uuid.uuid4()),
+                reasoning_id=reasoning_id,
+                timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                query=request.input,
+                model=self.model_adapter.model_name,
+                latency_ms=latency_ms,
+                cost=0.0015,  # Placeholder cost
+                user_id=request.context.get("user_id") if request.context else None
+            )
+            events.record_event(event, response)
+
             self.logger.info(f"Successfully processed request {request_id}")
             return response
             

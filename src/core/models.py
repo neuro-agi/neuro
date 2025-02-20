@@ -107,3 +107,23 @@ class HealthResponse(BaseModel):
             }
         }
     }
+
+
+class ReasoningEvent(BaseModel):
+    event_id: str = Field(..., description="Unique event ID")
+    reasoning_id: str = Field(..., description="Reasoning task ID")
+    timestamp: str = Field(..., description="Event timestamp in ISO 8601 format")
+    query: str = Field(..., description="The user query")
+    model: str = Field(..., description="The model used for reasoning")
+    latency_ms: float = Field(..., description="Processing latency in milliseconds")
+    cost: float = Field(..., description="Estimated cost of the reasoning task")
+    user_id: Optional[str] = Field(None, description="User ID associated with the request")
+
+
+class ReasoningEventList(BaseModel):
+    events: List[ReasoningEvent] = Field(..., description="List of reasoning events")
+    has_more: bool = Field(..., description="Whether more events are available")
+
+
+class ReasoningDetails(ReasoningResponse):
+    pass
