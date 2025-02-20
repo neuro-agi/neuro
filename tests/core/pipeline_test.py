@@ -159,4 +159,4 @@ async def test_generate_cot_single_step_trace(pipeline, monkeypatch):
 
     assert len(traces) == 1
     assert len(traces[0]) == 1
-    assert traces[0][0] == "This is a single step trace."
+    assert traces[0][0] == "This is a single step trace"

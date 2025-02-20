@@ -49,6 +49,9 @@ async def reason(
     """
     if agent is None:
         raise HTTPException(status_code=503, detail="Reasoning agent not initialized")
+
+    if not request.input:
+        raise HTTPException(status_code=422, detail="Input must not be empty")
     
     logger.info(f"Received reasoning request in {mode} mode")
     

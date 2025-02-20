@@ -10,7 +10,7 @@ A prototype implementation of Chain of Thought (CoT) monitoring and reasoning ba
 - **Risk Detection**: Identifies unsafe content, obfuscation, and low-quality reasoning
 - **Perturbation Analysis**: Systematic experiments to measure causal influence of reasoning steps
 - **Multiple Processing Modes**: Live (production), dryrun (testing), and perturb (analysis)
-- **Configurable Backends**: Mock adapter for testing, OpenAI adapter for production
+- **Configurable Backends**: Mock adapter for testing, OpenAI and Gemini adapters for production
 
 ## Quick Start
 
@@ -29,8 +29,9 @@ pip install fastapi uvicorn pydantic httpx pytest
 
 3. Set environment variables (optional):
 ```bash
-export MODEL_BACKEND=mock  # or 'openai'
+export MODEL_BACKEND=mock  # or 'openai' or 'gemini'
 export OPENAI_API_KEY=your_key_here  # if using OpenAI
+export GEMINI_API_KEY=your_key_here  # if using Gemini
 export FAITHFULNESS_THRESHOLD=0.6
 export COHERENCE_THRESHOLD=0.5
 ```
@@ -153,8 +154,9 @@ Key environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MODEL_BACKEND` | `mock` | Model backend: `mock` or `openai` |
+| `MODEL_BACKEND` | `mock` | Model backend: `mock`, `openai`, or `gemini` |
 | `OPENAI_API_KEY` | - | Required for OpenAI backend |
+| `GEMINI_API_KEY` | - | Required for Gemini backend |
 | `FAITHFULNESS_THRESHOLD` | `0.6` | Risk threshold for faithfulness |
 | `COHERENCE_THRESHOLD` | `0.5` | Risk threshold for coherence |
 | `N_CANDIDATES` | `3` | Number of reasoning candidates |
@@ -171,6 +173,7 @@ Key environment variables:
 - **ModelAdapter**: Abstract interface for different AI backends
 - **MockModelAdapter**: Deterministic adapter for testing
 - **OpenAIModelAdapter**: Production adapter using OpenAI API
+- **GeminiModelAdapter**: Production adapter using Gemini API
 
 ### Monitoring Components
 
@@ -253,7 +256,7 @@ The API handles various error conditions:
 
 ## Production Considerations
 
-- Use OpenAI adapter for production workloads
+- Use OpenAI or Gemini adapter for production workloads
 - Set appropriate thresholds based on use case
 - Monitor logs for risk detection patterns
 - Consider rate limiting for OpenAI API calls

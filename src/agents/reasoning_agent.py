@@ -47,6 +47,9 @@ class ReasoningAgent:
         # Generate or use request ID
         request_id = request.request_id or str(uuid.uuid4())
         self.logger.info(f"Processing reasoning request {request_id} in {mode} mode")
+
+        if not request.input:
+            raise ValueError("Input cannot be empty")
         
         try:
             # 1. Generate candidate reasoning traces

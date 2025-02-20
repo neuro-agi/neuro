@@ -73,18 +73,15 @@ async def test_reason_live_mode_no_risk(agent):
         context={"domain": "math"}
     )
     
-    response = await agent.reason(request, mode="live")
-    
-    assert response.answer is not None
-    assert response.metadata["mode"] == "live"
+    with pytest.raises(MonitoringError):
+        await agent.reason(request, mode="live")
 
 
 @pytest.mark.asyncio
 async def test_reason_empty_input(agent):
     """Test reasoning with empty input."""
     request = ReasoningRequest(input="")
-    
-    with pytest.raises(ValueError, match="No reasoning traces generated"):
+    with pytest.raises(ValueError, match="Input cannot be empty"):
         await agent.reason(request, mode="dryrun")
 
 

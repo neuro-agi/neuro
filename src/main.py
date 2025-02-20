@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.core.config import config
 from src.core.models import HealthResponse
 from src.adapters.model_adapter import MockModelAdapter, OpenAIModelAdapter
+from src.adapters.gemini_adapter import GeminiModelAdapter
 from src.core.monitor import CoTMonitor
 from src.agents.reasoning_agent import ReasoningAgent
 from src.api.routes import router, set_agent
@@ -43,6 +44,10 @@ async def lifespan(app: FastAPI):
             adapter_config = config.get_model_adapter_config()
             model_adapter = OpenAIModelAdapter(**adapter_config)
             logger.info("Initialized OpenAIModelAdapter")
+        elif config.model_backend == "gemini":
+            adapter_config = config.get_model_adapter_config()
+            model_adapter = GeminiModelAdapter(**adapter_config)
+            logger.info("Initialized GeminiModelAdapter")
         else:
             raise ValueError(f"Unknown model backend: {config.model_backend}")
         
@@ -125,6 +130,11 @@ async def health_check():
             status_code=503,
             detail="Service not ready - OpenAI API key not configured"
         )
+    if config.model_backend == "gemini" and not config.gemini_api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Service not ready - Gemini API key not configured"
+        )
     
     return HealthResponse(
         service="ok",
@@ -161,8 +171,9 @@ async def root():
 
 2. Set environment variables (optional):
    ```bash
-   export MODEL_BACKEND=mock  # or 'openai'
+   export MODEL_BACKEND=mock  # or 'openai' or 'gemini'
    export OPENAI_API_KEY=your_key_here  # if using OpenAI
+   export GEMINI_API_KEY=your_key_here  # if using Gemini
    export FAITHFULNESS_THRESHOLD=0.6
    export COHERENCE_THRESHOLD=0.5
    ```
@@ -231,8 +242,9 @@ The API returns structured responses with:
 ## Configuration
 
 Key environment variables:
-- `MODEL_BACKEND`: "mock" or "openai"
+- `MODEL_BACKEND`: "mock", "openai", or "gemini"
 - `OPENAI_API_KEY`: Required for OpenAI backend
+- `GEMINI_API_KEY`: Required for Gemini backend
 - `FAITHFULNESS_THRESHOLD`: Risk threshold for faithfulness (default: 0.6)
 - `COHERENCE_THRESHOLD`: Risk threshold for coherence (default: 0.5)
 - `N_CANDIDATES`: Number of reasoning candidates (default: 3)

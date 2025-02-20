@@ -13,9 +13,9 @@ class Config(BaseModel):
     """Configuration settings loaded from environment variables."""
     
     # Model backend configuration
-    model_backend: str = "mock"  # "mock" or "openai"
+    model_backend: str = "mock"  # "mock", "openai", or "gemini"
     openai_api_key: str = ""  # Required if model_backend is "openai"
-    
+    gemini_api_key: str = ""  # Required if model_backend is "gemini"     
     # Monitoring thresholds for evaluating reasoning chains
     faithfulness_threshold: float = 0.6  # For checking if the model's reasoning aligns with the source
     coherence_threshold: float = 0.5  # For checking if the model's reasoning is logical
@@ -35,9 +35,9 @@ class Config(BaseModel):
     @field_validator('model_backend')
     @classmethod
     def validate_model_backend(cls, v):
-        """Validate model backend is either 'mock' or 'openai'."""
-        if v not in ['mock', 'openai']:
-            raise ValueError("MODEL_BACKEND must be 'mock' or 'openai'")
+        """Validate model backend is 'mock', 'openai', or 'gemini'."""
+        if v not in ['mock', 'openai', 'gemini']:
+            raise ValueError("MODEL_BACKEND must be 'mock', 'openai', or 'gemini'")
         return v
     
     @field_validator('faithfulness_threshold', 'coherence_threshold')
@@ -79,6 +79,13 @@ class Config(BaseModel):
                 "api_key": self.openai_api_key,
                 "model": "gpt-3.5-turbo"
             }
+        if self.model_backend == "gemini":
+            if not self.gemini_api_key:
+                raise ValueError("GEMINI_API_KEY is required when MODEL_BACKEND=gemini")
+            return {
+                "api_key": self.gemini_api_key,
+                "model": "gemini-pro"
+            }
         return {}
     
     def get_monitor_config(self) -> Dict[str, Any]:
@@ -93,6 +100,7 @@ class Config(BaseModel):
 config = Config(
     model_backend=os.getenv("MODEL_BACKEND", "mock"),
     openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+    gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
     faithfulness_threshold=float(os.getenv("FAITHFULNESS_THRESHOLD", "0.6")),
     coherence_threshold=float(os.getenv("COHERENCE_THRESHOLD", "0.5")),
     perturb_steps_max=int(os.getenv("PERTURB_STEPS_MAX", "2")),

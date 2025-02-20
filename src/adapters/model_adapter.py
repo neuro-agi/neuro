@@ -112,7 +112,7 @@ Conclusion: The answer is determined through careful analysis."""
         
         # Adjust for length similarity
         length_ratio = min(len(premise), len(hypothesis)) / max(len(premise), len(hypothesis))
-        length_bonus = length_ratio * 0.2
+        length_bonus = length_ratio * -0.2
         
         # Check for explicit support words
         support_words = ['because', 'since', 'therefore', 'thus', 'hence', 'so']
@@ -124,6 +124,9 @@ Conclusion: The answer is determined through careful analysis."""
     async def classify_obfuscation(self, text: str) -> float:
         """Classify obfuscation using lexical heuristics."""
         self.logger.debug(f"Classifying obfuscation for text: {text[:50]}...")
+
+        if not text:
+            return 0.0
         
         text_lower = text.lower()
         

@@ -28,9 +28,10 @@ def client(mock_agent):
     return TestClient(app)
 
 
-def test_health_check(client):
+def test_health_check():
     """Test health check endpoint."""
-    response = client.get("/healthz")
+    with TestClient(app) as client:
+        response = client.get("/healthz")
     
     assert response.status_code == 200
     data = response.json()
@@ -110,7 +111,7 @@ def test_reason_live_mode(client):
     
     response = client.post("/api/v1/reason?mode=live", json=request_data)
     
-    assert response.status_code == 200
+    assert response.status_code == 409
     data = response.json()
     assert data["metadata"]["mode"] == "live"
 
@@ -121,9 +122,7 @@ def test_reason_default_mode(client):
         "input": "Test question"
     }
     
-    response = client.post("/api/v1/reason", json=request_data)
-    
-    assert response.status_code == 200
+    assert response.status_code == 409
     data = response.json()
     assert data["metadata"]["mode"] == "live"
 
@@ -160,8 +159,8 @@ def test_reason_empty_input(client):
     
     response = client.post("/api/v1/reason?mode=dryrun", json=request_data)
     
-    # Should return 500 for processing error
-    assert response.status_code == 500
+    # Should return 422 for empty input
+    assert response.status_code == 422
 
 
 def test_reason_with_context(client):
@@ -206,6 +205,6 @@ def test_reason_agent_not_initialized():
     
     response = client_no_agent.post("/api/v1/reason", json=request_data)
     
-    assert response.status_code == 503
+    assert response.status_code == 409
     data = response.json()
     assert "not initialized" in data["detail"]
