@@ -6,7 +6,7 @@ Handles environment-driven settings with validation and sensible defaults.
 import os
 import logging
 from typing import Dict, Any
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, validator
 
 
 class Config(BaseModel):
@@ -32,46 +32,32 @@ class Config(BaseModel):
         "case_sensitive": False
     }
     
-    @field_validator('model_backend')
-    @classmethod
+    @validator('model_backend')
     def validate_model_backend(cls, v):
-        """Validate model backend is 'mock', 'openai', or 'gemini'."""
         if v not in ['mock', 'openai', 'gemini']:
             raise ValueError("MODEL_BACKEND must be 'mock', 'openai', or 'gemini'")
         return v
     
-    @field_validator('faithfulness_threshold', 'coherence_threshold')
-    @classmethod
+    @validator('faithfulness_threshold', 'coherence_threshold')
     def validate_thresholds(cls, v):
-        """Validate thresholds are between 0 and 1."""
         if not 0.0 <= v <= 1.0:
             raise ValueError("Thresholds must be between 0.0 and 1.0")
         return v
     
-    @field_validator('perturb_steps_max', 'n_candidates')
-    @classmethod
+    @validator('perturb_steps_max', 'n_candidates')
     def validate_positive_integers(cls, v):
-        """Validate positive integer values."""
         if v < 1:
             raise ValueError("Must be positive integer")
         return v
     
-    @field_validator('log_level')
-    @classmethod
+    @validator('log_level')
     def validate_log_level(cls, v):
-        """Validate log level is valid."""
         valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
         if v.upper() not in valid_levels:
             raise ValueError(f"LOG_LEVEL must be one of {valid_levels}")
         return v.upper()
     
     def get_model_adapter_config(self) -> Dict[str, Any]:
-        """
-        Get configuration for model adapter initialization.
-        
-        Returns:
-            A dictionary with the model adapter configuration.
-        """
         if self.model_backend == "openai":
             if not self.openai_api_key:
                 raise ValueError("OPENAI_API_KEY is required when MODEL_BACKEND=openai")
@@ -89,14 +75,12 @@ class Config(BaseModel):
         return {}
     
     def get_monitor_config(self) -> Dict[str, Any]:
-        """Get configuration for monitor initialization."""
         return {
             "faithfulness_threshold": self.faithfulness_threshold,
             "coherence_threshold": self.coherence_threshold,
         }
 
 
-# Global config instance - load from environment variables
 config = Config(
     model_backend=os.getenv("MODEL_BACKEND", "mock"),
     openai_api_key=os.getenv("OPENAI_API_KEY", ""),
@@ -108,7 +92,6 @@ config = Config(
     log_level=os.getenv("LOG_LEVEL", "INFO")
 )
 
-# Configure logging
 logging.basicConfig(
     level=getattr(logging, config.log_level),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

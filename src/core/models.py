@@ -4,12 +4,10 @@ Defines request/response schemas with validation.
 """
 
 from typing import List, Dict, Any, Optional
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, Field, validator
 
 
 class ReasoningRequest(BaseModel):
-    """Request model for reasoning endpoint."""
-    
     input: str = Field(..., description="The input question or problem to reason about")
     context: Optional[Dict[str, Any]] = Field(None, description="Additional context for reasoning")
     policy: Optional[str] = Field(None, description="Policy constraints for reasoning")
@@ -28,8 +26,6 @@ class ReasoningRequest(BaseModel):
 
 
 class PerturbationResult(BaseModel):
-    """Result of perturbation experiments."""
-    
     original_answer: str = Field(..., description="The original answer before perturbation")
     perturbed_answers: List[Dict[str, Any]] = Field(..., description="List of perturbation results")
     causal_influence_score: float = Field(..., ge=0.0, le=1.0, description="Fraction of perturbations that changed the answer")
@@ -49,8 +45,6 @@ class PerturbationResult(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    """Error response model."""
-    
     code: int = Field(..., description="Error code")
     message: str = Field(..., description="Error message")
     
@@ -65,8 +59,6 @@ class ErrorResponse(BaseModel):
 
 
 class ReasoningResponse(BaseModel):
-    """Response model for reasoning endpoint."""
-    
     answer: str = Field(..., description="The final answer")
     reasoning_trace: List[str] = Field(..., description="List of reasoning steps")
     faithfulness_score: float = Field(..., ge=0.0, le=1.0, description="Faithfulness score (0-1)")
@@ -94,18 +86,14 @@ class ReasoningResponse(BaseModel):
         }
     }
 
-    @field_validator('faithfulness_score', 'coherence_score')
-    @classmethod
+    @validator('faithfulness_score', 'coherence_score')
     def validate_scores(cls, v):
-        """Validate scores are between 0 and 1."""
         if not 0.0 <= v <= 1.0:
             raise ValueError("Scores must be between 0.0 and 1.0")
         return v
 
 
 class HealthResponse(BaseModel):
-    """Health check response model."""
-    
     service: str = Field(..., description="Service status")
     monitor: str = Field(..., description="Monitor status")
     uptime_seconds: float = Field(..., description="Service uptime in seconds")
