@@ -208,3 +208,26 @@ def test_reason_agent_not_initialized():
     assert response.status_code == 409
     data = response.json()
     assert "not initialized" in data["detail"]
+
+def test_eval_endpoint(client):
+    """Test the /eval endpoint."""
+    request_data = {
+        "reasoningId": "res-abcde12345",
+        "metrics": ["faithfulness", "safety"]
+    }
+
+    response = client.post("/api/v1/eval", json=request_data)
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "evalId" in data
+    assert data["reasoningId"] == "res-abcde12345"
+    assert "scores" in data
+    assert len(data["scores"]) == 2
+
+    for score in data["scores"]:
+        assert "metric" in score
+        assert "score" in score
+        assert "explanation" in score
+        assert 0.0 <= score["score"] <= 1.0

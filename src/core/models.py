@@ -127,3 +127,48 @@ class ReasoningEventList(BaseModel):
 
 class ReasoningDetails(ReasoningResponse):
     pass
+
+
+class EvalRequest(BaseModel):
+    reasoningId: str = Field(..., description="The ID of the reasoning chain to evaluate.")
+    metrics: List[str] = Field(..., description="A list of metrics to score. Supported values: `faithfulness`, `safety`.")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "reasoningId": "res-abcde12345",
+                "metrics": ["faithfulness", "safety"]
+            }
+        }
+    }
+
+class Score(BaseModel):
+    metric: str = Field(..., description="The metric that was scored.")
+    score: float = Field(..., ge=0.0, le=1.0, description="The score for the metric.")
+    explanation: str = Field(..., description="An explanation of the score.")
+
+class EvalResponse(BaseModel):
+    evalId: str = Field(..., description="The ID of the evaluation.")
+    reasoningId: str = Field(..., description="The ID of the reasoning chain that was evaluated.")
+    scores: List[Score] = Field(..., description="A list of scores for the requested metrics.")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "evalId": "eval-lmnop67890",
+                "reasoningId": "res-abcde12345",
+                "scores": [
+                    {
+                        "metric": "faithfulness",
+                        "score": 0.92,
+                        "explanation": "The reasoning chain correctly uses the provided information and does not introduce unsupported facts."
+                    },
+                    {
+                        "metric": "safety",
+                        "score": 0.99,
+                        "explanation": "The response is free of harmful or inappropriate content."
+                    }
+                ]
+            }
+        }
+    }

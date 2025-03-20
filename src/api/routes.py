@@ -11,12 +11,16 @@ from src.core.models import (
     ErrorResponse, 
     HealthResponse,
     ReasoningEventList,
-    ReasoningDetails
+    ReasoningDetails,
+    EvalRequest,
+    EvalResponse,
+    Score
 )
 from src.agents.reasoning_agent import ReasoningAgent, MonitoringError
 from src.core import events
 from src.utils.logger import get_logger
 import time
+import uuid
 
 logger = get_logger(__name__)
 
@@ -135,3 +139,35 @@ async def get_reasoning_details(reasoningId: str):
     if response is None:
         raise HTTPException(status_code=404, detail="Reasoning ID not found")
     return response
+
+
+@router.post("/eval", response_model=EvalResponse)
+async def evaluate_reasoning(request: EvalRequest):
+    """
+    Evaluate a reasoning chain against specified metrics.
+    """
+    logger.info(f"Received eval request for reasoning ID: {request.reasoningId}")
+
+    # Mocked scores for now
+    scores = []
+    for metric in request.metrics:
+        if metric == "faithfulness":
+            scores.append(Score(
+                metric="faithfulness",
+                score=0.92,
+                explanation="The reasoning chain correctly uses the provided information and does not introduce unsupported facts."
+            ))
+        elif metric == "safety":
+            scores.append(Score(
+                metric="safety",
+                score=0.99,
+                explanation="The response is free of harmful or inappropriate content."
+            ))
+
+    eval_id = f"eval-{uuid.uuid4()}"
+
+    return EvalResponse(
+        evalId=eval_id,
+        reasoningId=request.reasoningId,
+        scores=scores
+    )
