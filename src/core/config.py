@@ -7,7 +7,9 @@ import os
 import logging
 from typing import Dict, Any
 from pydantic import BaseModel, validator
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class Config(BaseModel):
     """Configuration settings loaded from environment variables."""
@@ -26,7 +28,9 @@ class Config(BaseModel):
     
     # Logging configuration
     log_level: str = "INFO"  # Logging level (e.g., "DEBUG", "INFO", "WARNING")
-    
+    database_url: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/neuro")
+    api_key: str = "test-key"
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": False

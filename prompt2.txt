@@ -1,0 +1,68 @@
+### Prompt for Integrating APIs into an Existing FastAPI Project
+
+You are an expert Python developer tasked with integrating a set of API endpoints from a former Next.js application into an existing FastAPI project. Your primary goal is to adapt the new endpoints to the existing project's structure, conventions, and authentication mechanisms.
+
+**1. Analyze the Existing Project**
+
+Before writing any code, you must thoroughly analyze the existing FastAPI project to understand its architecture:
+
+*   **Project Structure:** Identify the main application file (e.g., `main.py`), where API routers are stored (e.g., a `routers/` or `api/` directory), and how they are included in the main FastAPI app instance.
+*   **Database Integration:** Determine which ORM is being used (e.g., SQLAlchemy, SQLModel, Tortoise ORM) and how database sessions are managed and passed to the API routes. Locate the existing database models.
+*   **Authentication:** Investigate the current authentication system. Find the dependency or utility function used to get the current authenticated user and protect endpoints.
+*   **Configuration:** Find out how environment variables and other configurations are managed (e.g., Pydantic's `Settings`, `.env` files).
+
+**2. Replicate and Integrate API Endpoints**
+
+Based on your analysis, integrate the following endpoints into the existing project. For each endpoint, you must create a new `APIRouter` and follow the project's existing patterns.
+
+---
+
+**Endpoint 1: Neuro Eval**
+
+*   **Original Logic (Next.js):** A POST endpoint at `/api/neuro/eval` that requires user authentication and saves an evaluation to the database.
+    ```typescript
+    // POST /api/neuro/eval
+    // Requires authentication
+    const { logId, score, comment } = await request.json();
+    // Inserts into 'evaluations' table
+    ```
+*   **Integration Instructions:**
+    *   Create a new router (e.g., in `routers/neuro.py`).
+    *   Define a POST endpoint `/neuro/eval`.
+    *   **Crucially, protect this endpoint using the project's existing authentication dependency.** Do not create a new authentication system if one already exists.
+    *   Create a Pydantic model for the request body: `logId: int`, `score: float`, `comment: Optional[str]`.
+    *   Using the project's existing ORM and database session pattern, create a model for the `evaluations` table and implement the logic to insert the new data.
+
+---
+
+**Endpoint 2: Neuro Reason**
+
+*   **Original Logic (Next.js):** A POST endpoint at `/api/neuro/reason` that requires user authentication, simulates a task, and logs the result to the database.
+    ```typescript
+    // POST /api/neuro/reason
+    // Requires authentication
+    const { query } = await request.json();
+    // Simulates a long-running task
+    // Inserts into 'reasoningLogs' table
+    ```
+*   **Integration Instructions:**
+    *   Add a new endpoint to the `routers/neuro.py` router.
+    *   Define a POST endpoint `/neuro/reason`.
+    *   Protect this endpoint using the same authentication dependency as the other protected routes.
+    *   Create a Pydantic model for the request body: `query: str`.
+    *   Using the project's existing ORM, create a model for the `reasoningLogs` table.
+    *   Implement the business logic to simulate the task and log the results to the database, making sure to follow the project's pattern for database interactions.
+
+---
+
+**3. Final Steps**
+
+*   **Dependencies:** Identify any new Python packages required for your new endpoints (e.g., `python-jose` if you had to add auth, `psycopg2-binary` if it's a new database) and add them to the project's `requirements.txt` or `pyproject.toml`.
+*   **Database Models:** Add the new ORM models for `evaluations` and `reasoningLogs` alongside the existing database models. If the project uses a migration tool like Alembic, create a new migration for the new tables.
+*   **Review and Refactor:** Ensure your new code seamlessly blends with the existing project's style and conventions. Add comments only where necessary to explain complex logic.
+
+---
+
+**Database Setup**
+
+This project uses a **PostgreSQL** database. The connection is managed through the `POSTGRES_URL` environment variable. We use **Drizzle ORM** for database interactions, and the schema is defined in `lib/db/schema.ts`. Database migrations are handled by `drizzle-kit`.

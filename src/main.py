@@ -15,7 +15,8 @@ from src.adapters.model_adapter import MockModelAdapter, OpenAIModelAdapter
 from src.adapters.gemini_adapter import GeminiModelAdapter
 from src.core.monitor import CoTMonitor
 from src.agents.reasoning_agent import ReasoningAgent
-from src.api.routes import router, set_agent
+from src.api.routes import router
+from src.api.neuro_routes import router as neuro_router
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -107,6 +108,7 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(router)
+app.include_router(neuro_router)
 
 
 @app.get("/healthz", response_model=HealthResponse)

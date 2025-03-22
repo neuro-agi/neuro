@@ -4,3 +4,9 @@ pydantic
 httpx
 pytest
 google-generativeai
+sqlalchemy
+alembic
+python-dotenv
+psycopg2-binary
+python-jose
+passlib[bcrypt]

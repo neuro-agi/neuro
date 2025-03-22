@@ -5,6 +5,60 @@ Defines request/response schemas with validation.
 
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field, validator
+from sqlalchemy import Column, Integer, String, Float, DateTime, func
+from src.core.database import Base
+import datetime
+
+
+class Evaluation(Base):
+    __tablename__ = "evaluations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    logId = Column(Integer, index=True)
+    score = Column(Float)
+    comment = Column(String)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class ReasoningLog(Base):
+    __tablename__ = "reasoning_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    query = Column(String)
+    result = Column(String)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class NeuroEvaluation(BaseModel):
+    logId: int
+    score: float
+    comment: Optional[str] = None
+
+
+class NeuroEvaluationResponse(BaseModel):
+    id: int
+    logId: int
+    score: float
+    comment: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        orm_mode = True
+
+
+class NeuroReason(BaseModel):
+    query: str
+
+
+class NeuroReasonResponse(BaseModel):
+    id: int
+    query: str
+    result: str
+    created_at: datetime.datetime
+
+    class Config:
+        orm_mode = True
+
 
 
 class ReasoningRequest(BaseModel):
@@ -127,48 +181,3 @@ class ReasoningEventList(BaseModel):
 
 class ReasoningDetails(ReasoningResponse):
     pass
-
-
-class EvalRequest(BaseModel):
-    reasoningId: str = Field(..., description="The ID of the reasoning chain to evaluate.")
-    metrics: List[str] = Field(..., description="A list of metrics to score. Supported values: `faithfulness`, `safety`.")
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "reasoningId": "res-abcde12345",
-                "metrics": ["faithfulness", "safety"]
-            }
-        }
-    }
-
-class Score(BaseModel):
-    metric: str = Field(..., description="The metric that was scored.")
-    score: float = Field(..., ge=0.0, le=1.0, description="The score for the metric.")
-    explanation: str = Field(..., description="An explanation of the score.")
-
-class EvalResponse(BaseModel):
-    evalId: str = Field(..., description="The ID of the evaluation.")
-    reasoningId: str = Field(..., description="The ID of the reasoning chain that was evaluated.")
-    scores: List[Score] = Field(..., description="A list of scores for the requested metrics.")
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "evalId": "eval-lmnop67890",
-                "reasoningId": "res-abcde12345",
-                "scores": [
-                    {
-                        "metric": "faithfulness",
-                        "score": 0.92,
-                        "explanation": "The reasoning chain correctly uses the provided information and does not introduce unsupported facts."
-                    },
-                    {
-                        "metric": "safety",
-                        "score": 0.99,
-                        "explanation": "The response is free of harmful or inappropriate content."
-                    }
-                ]
-            }
-        }
-    }
