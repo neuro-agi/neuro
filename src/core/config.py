@@ -13,9 +13,9 @@ class Config(BaseModel):
     """Configuration settings loaded from environment variables."""
     
     # Model backend configuration
-    model_backend: str = "mock"  # "mock", "openai", or "gemini"
+    model_backend: str = "gemini"  # "mock", "openai", or "gemini"
     openai_api_key: str = ""  # Required if model_backend is "openai"
-    gemini_api_key: str = ""  # Required if model_backend is "gemini"     
+    gemini_api_key: str = "AIzaSyB4JlCxpvCfD6Nqsp6_fMH4A7nkUB3-W0E"  # Required if model_backend is "gemini"     
     # Monitoring thresholds for evaluating reasoning chains
     faithfulness_threshold: float = 0.6  # For checking if the model's reasoning aligns with the source
     coherence_threshold: float = 0.5  # For checking if the model's reasoning is logical
